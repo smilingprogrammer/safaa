@@ -19,6 +19,9 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Set PYTHONPATH for future steps
+        run: echo "PYTHONPATH=$(pwd)/Safaa/src" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: |
           pip install -r $BASE_PATH/requirements.txt
@@ -37,8 +40,10 @@ jobs:
 
       - name: Run utility script (preprocess, declutter, split)
         run: |
+          export PYTHONPATH=$(pwd)/Safaa/src
           python $BASE_PATH/utility_scripts.py
-          
+
       - name: Show final output files (for confirmation/logging)
         run: |
           ls -lh $BASE_PATH/data/
+
