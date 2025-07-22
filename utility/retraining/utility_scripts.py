@@ -31,40 +31,41 @@ def save_to_csv(df: pd.DataFrame, filepath: str):
     df.to_csv(filepath, index=False)
 
 
-def find_latest_copyright_file():
-    files = glob.glob("data/copyrights_*.csv")
+def find_latest_copyright_file(data_dir: str):
+    files = glob.glob(os.path.join(data_dir, "copyrights_*.csv"))
     if not files:
         raise FileNotFoundError("No copyright data files found in 'data/'")
     latest = max(files, key=os.path.getmtime)
     return latest
 
 
-
 def main():
+    base_path = os.path.dirname(__file__)
+    data_dir = os.path.join(base_path, "data")
 
     agent = SafaaAgent()
 
-    #Preprocessing
-    latest_file = find_latest_copyright_file()
+    # Preprocessing
+    latest_file = find_latest_copyright_file(data_dir)
     raw_df = load_data(latest_file)
     raw_data = raw_df['original_content']
     preprocessed_df = preprocess_data(agent, raw_data)
-    save_to_csv(preprocessed_df, 'data/preprocessed_copyrights.csv')
+    save_to_csv(preprocessed_df, os.path.join(data_dir, "preprocessed_copyrights.csv"))
 
     print("✅ Preprocessing completed")
 
-    #Decluttering
-    df = load_data('data/preprocessed_copyrights.csv')
+    # Decluttering
+    df = load_data(os.path.join(data_dir, "preprocessed_copyrights.csv"))
     data = df['original_content']
     decluttered_df = declutter_data(agent, data)
-    save_to_csv(decluttered_df, 'data/decluttered_copyrights.csv')
+    save_to_csv(decluttered_df, os.path.join(data_dir, "decluttered_copyrights.csv"))
 
     print("✅ Decluttering completed")
 
-    #Data Split
+    # Data Split
     train_df, test_df = split_data(df)
-    save_to_csv(train_df, 'data/train_data.csv')
-    save_to_csv(test_df, 'data/test_data.csv')
+    save_to_csv(train_df, os.path.join(data_dir, "train_data.csv"))
+    save_to_csv(test_df, os.path.join(data_dir, "test_data.csv"))
 
     print("✅ Split complete: train_data.csv and test_data.csv created.")
 
