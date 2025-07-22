@@ -50,7 +50,8 @@ def main():
     raw_df = load_data(latest_file)
     raw_data = raw_df['original_content']
     preprocessed_df = preprocess_data(agent, raw_data)
-    save_to_csv(preprocessed_df, os.path.join(data_dir, "preprocessed_copyrights.csv"))
+    prep_data_path = os.path.join(data_dir, "preprocessed_copyrights.csv")
+    save_to_csv(preprocessed_df, prep_data_path)
 
     print("✅ Preprocessing completed")
 
@@ -58,14 +59,17 @@ def main():
     df = load_data(os.path.join(data_dir, "preprocessed_copyrights.csv"))
     data = df['original_content']
     decluttered_df = declutter_data(agent, data)
-    save_to_csv(decluttered_df, os.path.join(data_dir, "decluttered_copyrights.csv"))
+    decl_data_path = os.path.join(data_dir, "decluttered_copyrights.csv")
+    save_to_csv(decluttered_df, decl_data_path)
 
     print("✅ Decluttering completed")
 
     # Data Split
     train_df, test_df = split_data(df)
-    save_to_csv(train_df, os.path.join(data_dir, "train_data.csv"))
-    save_to_csv(test_df, os.path.join(data_dir, "test_data.csv"))
+    train_data_path = os.path.join(data_dir, "train_data.csv")
+    test_data_path = os.path.join(data_dir, "test_data.csv")
+    save_to_csv(train_df, train_data_path)
+    save_to_csv(test_df, test_data_path)
 
     print("✅ Split complete: train_data.csv and test_data.csv created.")
 
