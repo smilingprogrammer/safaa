@@ -37,7 +37,7 @@ jobs:
 
       - name: Run utility script (preprocess, declutter, split)
         run: |
-          python $BASE_PATH/utility_script.py
+          python $BASE_PATH/utility_scripts.py
           
       - name: Show final output files (for confirmation/logging)
         run: |
