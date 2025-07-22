@@ -7,7 +7,7 @@ jobs:
   safaa-model-retraining:
     runs-on: ubuntu-latest
     env:
-      BASE_PATH: utility/retraining/
+      BASE_PATH: utility/retraining
 #      SAFAA_SECRET: ${{ secrets.MY_SECRET }}
 
     steps:
