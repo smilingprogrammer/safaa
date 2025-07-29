@@ -3,8 +3,8 @@
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
-# from safaa.Safaa import SafaaAgent
-from Safaa.src.safaa.Safaa import SafaaAgent
+from safaa.Safaa import SafaaAgent
+# from Safaa.src.safaa.Safaa import SafaaAgent
 import os
 import glob
 import argparse
