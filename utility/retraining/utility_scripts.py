@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: 2025 Abdulsobur Oyewale
 
 import pandas as pd
+from joblib import load, dump
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, f1_score, recall_score
 from safaa.Safaa import SafaaAgent
@@ -88,20 +89,20 @@ if __name__ == '__main__':
     if args.train:
         data = load_data(os.path.join(data_dir, "train_data.csv"))
         agent.train_false_positive_detector_model(data["copyright"], data["falsePositive"])
-        # model_dir = os.path.join(base_path, 'model')
-        agent.save("/home/fossy/Safaa")
+        model_dir = os.path.join(base_path, 'model')
+        # agent.save("/home/fossy/Safaa")
+        agent.save(model_dir)
         print("✅ Training completed and model saved.")
 
 
     if args.test:
         test_data = load_data(os.path.join(data_dir, "test_data.csv"))
         X_test = test_data["copyright"]
-        # y_true = test_data["falsePositive"]
 
         y_true = test_data["falsePositive"].map(lambda x: "f" if x in (1, True) else "t")
 
-        # agent = SafaaAgent(use_local_model=False, model_dir=os.path.join(base_path, 'model'))
-        agent = SafaaAgent(use_local_model=True)
+        agent = SafaaAgent(use_local_model=False, model_dir=os.path.join(base_path, 'model'))
+
         y_pred = agent.predict(X_test)
 
         accuracy = accuracy_score(y_true, y_pred)
