@@ -53,6 +53,7 @@ jobs:
           python $BASE_PATH/utility_scripts.py --declutter
           python $BASE_PATH/utility_scripts.py --split
           python $BASE_PATH/utility_scripts.py --train
+          python $BASE_PATH/utility_scripts.py --test
 
 
       - name: Show final output files (for confirmation/logging)
