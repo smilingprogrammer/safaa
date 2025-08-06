@@ -2,11 +2,9 @@
 # SPDX-FileCopyrightText: 2025 Abdulsobur Oyewale
 
 import pandas as pd
-from joblib import load, dump
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, f1_score, recall_score
 from safaa.Safaa import SafaaAgent
-# from Safaa.src.safaa.Safaa import SafaaAgent
 import os
 import glob
 import argparse
@@ -92,7 +90,7 @@ if __name__ == '__main__':
         agent.train_false_positive_detector_model(data["copyright"], data["falsePositive"])
         model_dir = os.path.join(base_path, 'model')
         # agent.save("/home/fossy/Safaa")
-        agent.save()
+        agent.save(model_dir)
         print("✅ Training completed and model saved.")
 
 
