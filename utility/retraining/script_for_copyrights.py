@@ -38,11 +38,35 @@ sql_template = """
         INNER JOIN uploadtree UT ON C.pfile_fk = UT.pfile_fk
         LEFT JOIN copyright_event CE ON CE.copyright_fk = C.copyright_pk
             AND CE.uploadtree_fk = UT.uploadtree_pk
+        AND ut.uploadtree_pk NOT IN (SELECT uploadtree_fk from clearing_decision WHERE decision_type=4)
         WHERE C.content IS NOT NULL
             AND C.content != ''
         ORDER BY C.copyright_pk, UT.uploadtree_pk, C.content, CE.content DESC
         LIMIT {limit};
         """
+
+# sql_template = """
+#         SELECT DISTINCT ON (C.copyright_pk, UT.uploadtree_pk)
+#             C.copyright_pk,
+#             UT.uploadtree_pk,
+#             C.content AS original_content,
+#             CE.content AS edited_content,
+#             C.hash AS original_hash,
+#             CE.hash AS edited_hash,
+#             C.agent_fk,
+#             C.is_enabled AS original_is_enabled,
+#             CE.is_enabled AS modified_is_enabled
+#         FROM copyright C
+#         JOIN uploadtree UT ON C.pfile_fk = UT.pfile_fk
+#         LEFT JOIN copyright_event CE
+#             ON CE.copyright_fk = C.copyright_pk
+#             AND CE.uploadtree_fk = UT.uploadtree_pk
+#         WHERE C.content IS NOT NULL
+#           AND C.content != ''
+#           AND UT.uploadtree_pk NOT IN (SELECT uploadtree_fk FROM clearing_decision WHERE decision_type = 4)
+#         ORDER BY C.copyright_pk, UT.uploadtree_pk, C.content, CE.content DESC
+#         LIMIT {limit};
+# """
 
 def fetch_copyright_data():
 
