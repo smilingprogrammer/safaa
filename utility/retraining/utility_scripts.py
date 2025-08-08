@@ -15,10 +15,10 @@ def load_data(filepath: str) -> pd.DataFrame:
     return pd.read_csv(filepath)
 
 
-def declutter_data(agent: SafaaAgent, data: pd.Series) -> pd.DataFrame:
+def declutter_data(agent: SafaaAgent, data: pd.Series) -> pd.Series:
     predictions = ["f"] * len(data)
     decluttered = agent.declutter(data, predictions)
-    return pd.DataFrame({'original_content': data, 'decluttered_content': decluttered})
+    return pd.Series(decluttered, index=data.index)
 
 
 def preprocess_data(agent: SafaaAgent, data: pd.Series) -> pd.Series:
@@ -65,10 +65,7 @@ if __name__ == '__main__':
 
     if args.declutter:
         df = load_data(os.path.join(data_dir, "preprocessed_copyrights.csv"))
-        data = df['copyright']
-        decluttered_texts = declutter_data(agent, data)
-
-        df['copyright'] = decluttered_texts
+        df['copyright'] = declutter_data(agent, df['copyright'])
         save_to_csv(df, os.path.join(data_dir, "decluttered_copyrights.csv"))
         print("✅ Decluttering completed")
 
