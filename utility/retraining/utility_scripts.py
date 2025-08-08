@@ -21,9 +21,9 @@ def declutter_data(agent: SafaaAgent, data: pd.Series) -> pd.DataFrame:
     return pd.DataFrame({'original_content': data, 'decluttered_content': decluttered})
 
 
-def preprocess_data(agent: SafaaAgent, data: pd.Series) -> pd.DataFrame:
+def preprocess_data(agent: SafaaAgent, data: pd.Series) -> pd.Series:
     preprocessed = agent.preprocess_data(data)
-    return pd.DataFrame({'original_content': data, 'preprocessed_content': preprocessed})
+    return pd.Series(preprocessed, index=data.index)
 
 
 def split_data(df: pd.DataFrame, test_size=0.2, random_state=42):
@@ -59,10 +59,7 @@ if __name__ == '__main__':
     if args.preprocess:
         latest_file = find_latest_copyright_file(data_dir)
         raw_df = load_data(latest_file)
-        raw_data = raw_df['copyright']
-        preprocessed_texts = preprocess_data(agent, raw_data)
-
-        raw_df['copyright'] = list(preprocessed_texts)
+        raw_df['copyright'] = preprocess_data(agent, raw_df['copyright'])
         save_to_csv(raw_df, os.path.join(data_dir, "preprocessed_copyrights.csv"))
         print("✅ Preprocessing completed")
 
