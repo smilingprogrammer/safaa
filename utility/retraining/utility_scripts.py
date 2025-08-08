@@ -62,7 +62,7 @@ if __name__ == '__main__':
         raw_data = raw_df['copyright']
         preprocessed_texts = preprocess_data(agent, raw_data)
 
-        raw_df['copyright'] = preprocessed_texts  # update only the copyright column
+        raw_df['copyright'] = list(preprocessed_texts)
         save_to_csv(raw_df, os.path.join(data_dir, "preprocessed_copyrights.csv"))
         print("✅ Preprocessing completed")
 
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         data = df['copyright']
         decluttered_texts = declutter_data(agent, data)
 
-        df['copyright'] = decluttered_texts  # update only the copyright column
+        df['copyright'] = decluttered_texts
         save_to_csv(df, os.path.join(data_dir, "decluttered_copyrights.csv"))
         print("✅ Decluttering completed")
 
