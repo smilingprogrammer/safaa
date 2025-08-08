@@ -60,21 +60,23 @@ if __name__ == '__main__':
         latest_file = find_latest_copyright_file(data_dir)
         raw_df = load_data(latest_file)
         raw_data = raw_df['copyright']
-        preprocessed_df = preprocess_data(agent, raw_data)
-        save_to_csv(preprocessed_df, os.path.join(data_dir, "preprocessed_copyrights.csv"))
+        preprocessed_texts = preprocess_data(agent, raw_data)
+
+        raw_df['copyright'] = preprocessed_texts  # update only the copyright column
+        save_to_csv(raw_df, os.path.join(data_dir, "preprocessed_copyrights.csv"))
         print("✅ Preprocessing completed")
 
     if args.declutter:
         df = load_data(os.path.join(data_dir, "preprocessed_copyrights.csv"))
         data = df['copyright']
-        decluttered_df = declutter_data(agent, data)
-        save_to_csv(decluttered_df, os.path.join(data_dir, "decluttered_copyrights.csv"))
+        decluttered_texts = declutter_data(agent, data)
+
+        df['copyright'] = decluttered_texts  # update only the copyright column
+        save_to_csv(df, os.path.join(data_dir, "decluttered_copyrights.csv"))
         print("✅ Decluttering completed")
 
     if args.split:
-        # For the pipeline preprocessed data
         df = load_data(os.path.join(data_dir, "preprocessed_copyrights.csv"))
-
         train_df, test_df = split_data(df)
         save_to_csv(train_df, os.path.join(data_dir, "train_data.csv"))
         save_to_csv(test_df, os.path.join(data_dir, "test_data.csv"))
@@ -84,19 +86,15 @@ if __name__ == '__main__':
         data = load_data(os.path.join(data_dir, "train_data.csv"))
         agent.train_false_positive_detector_model(data["copyright"], data["falsePositive"])
         model_dir = os.path.join(base_path, 'model')
-        # agent.save("/home/fossy/Safaa")
         agent.save(model_dir)
         print("✅ Training completed and model saved.")
-
 
     if args.test:
         test_data = load_data(os.path.join(data_dir, "test_data.csv"))
         X_test = test_data["copyright"]
-
         y_true = test_data["falsePositive"].map(lambda x: "f" if x in (1, True) else "t")
 
         agent = SafaaAgent(use_local_model=False, model_dir=os.path.join(base_path, 'model'))
-
         y_pred = agent.predict(X_test)
 
         accuracy = accuracy_score(y_true, y_pred)
