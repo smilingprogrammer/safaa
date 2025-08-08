@@ -4,7 +4,8 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, f1_score, recall_score
-from safaa.Safaa import SafaaAgent
+# from safaa.Safaa import SafaaAgent
+from Safaa.src.safaa.Safaa import SafaaAgent
 import os
 import glob
 import argparse
@@ -58,27 +59,21 @@ if __name__ == '__main__':
     if args.preprocess:
         latest_file = find_latest_copyright_file(data_dir)
         raw_df = load_data(latest_file)
-        raw_data = raw_df['original_content']
+        raw_data = raw_df['copyright']
         preprocessed_df = preprocess_data(agent, raw_data)
         save_to_csv(preprocessed_df, os.path.join(data_dir, "preprocessed_copyrights.csv"))
         print("✅ Preprocessing completed")
 
     if args.declutter:
         df = load_data(os.path.join(data_dir, "preprocessed_copyrights.csv"))
-        data = df['original_content']
+        data = df['copyright']
         decluttered_df = declutter_data(agent, data)
         save_to_csv(decluttered_df, os.path.join(data_dir, "decluttered_copyrights.csv"))
         print("✅ Decluttering completed")
 
     if args.split:
         # For the pipeline preprocessed data
-        # df = load_data(os.path.join(data_dir, "preprocessed_copyrights.csv"))
-
-        # For the available data in fossology
-        train_data_path = os.path.join(base_path, '..', '..', 'datasets', 'false_positive_detection_dataset.csv')
-        dataset_path = os.path.abspath(train_data_path)
-        df = pd.read_csv(dataset_path)
-
+        df = load_data(os.path.join(data_dir, "preprocessed_copyrights.csv"))
 
         train_df, test_df = split_data(df)
         save_to_csv(train_df, os.path.join(data_dir, "train_data.csv"))
