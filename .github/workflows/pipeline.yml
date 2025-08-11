@@ -90,7 +90,8 @@ jobs:
         run: |
           BRANCH_NAME="retrained-model-$(date +'%Y%m%d-%H%M%S')"
           git checkout -b $BRANCH_NAME
-          git add Safaa/src/safaa/model
+          git add Safaa/src/safaa/models/false_positive_detection_vectorizer.pkl
+          git add Safaa/src/safaa/models/false_positive_detection_model_sgd.pkl
           git commit -m "Update retrained Safaa model - $(date)"
           git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} $BRANCH_NAME
 
