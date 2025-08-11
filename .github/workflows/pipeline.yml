@@ -88,6 +88,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
           BRANCH_NAME="retrained-model-$(date +'%Y%m%d-%H%M%S')"
           git checkout -b $BRANCH_NAME
           git add Safaa/src/safaa/models/false_positive_detection_vectorizer.pkl
