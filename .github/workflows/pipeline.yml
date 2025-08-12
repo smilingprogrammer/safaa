@@ -84,24 +84,15 @@ jobs:
           cp $BASE_PATH/model/false_positive_detection_vectorizer.pkl Safaa/src/safaa/models/
           cp $BASE_PATH/model/false_positive_detection_model_sgd.pkl Safaa/src/safaa/models/
 
-      - name: Commit retrained model to original path
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          BRANCH_NAME="retrained-model-$(date +'%Y%m%d-%H%M%S')"
-          git checkout -b $BRANCH_NAME
-          git add Safaa/src/safaa/models/false_positive_detection_vectorizer.pkl
-          git add Safaa/src/safaa/models/false_positive_detection_model_sgd.pkl
-          git commit -m "Update retrained Safaa model - $(date)"
-          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} $BRANCH_NAME
+      - name: Set branch name
+        id: vars
+        run: echo "branch_name=retrained-model-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.vars.outputs.branch_name }}
           commit-message: "Update retrained Safaa model"
           title: "Retrained model - Accuracy ${{ steps.metrics.outputs.accuracy }}, F1 ${{ steps.metrics.outputs.f1 }}"
           body: |
