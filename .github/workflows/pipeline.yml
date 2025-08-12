@@ -86,14 +86,18 @@ jobs:
 
       - name: Set branch name
         id: vars
-        run: echo "branch_name=retrained-model-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+        run: echo "branch_name=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.vars.outputs.branch_name }}
+          branch: retrained-model-${{ steps.vars.outputs.branch_name }}
+          branch-suffix: timestamp
           commit-message: "Update retrained Safaa model"
+          add-paths: |
+            Safaa/src/safaa/models/false_positive_detection_vectorizer.pkl
+            Safaa/src/safaa/models/false_positive_detection_model_sgd.pkl
           title: "Retrained model - Accuracy ${{ steps.metrics.outputs.accuracy }}, F1 ${{ steps.metrics.outputs.f1 }}"
           body: |
             This PR contains the newly retrained Safaa model.
