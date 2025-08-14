@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BASE_PATH: utility/retraining
-      GIT_COPY_PATH: Safaa/src/safaa/models
       PYTHONPATH: ${{ github.workspace }}/Safaa/src
 #      SAFAA_SECRET: ${{ secrets.MY_SECRET }}
 
@@ -82,8 +81,8 @@ jobs:
         run: |
           ORIGINAL_PATH="Safaa/src/safaa/models"
           mkdir -p "$ORIGINAL_PATH"
-          cp $BASE_PATH/model/false_positive_detection_vectorizer.pkl $GIT_COPY_PATH
-          cp $BASE_PATH/model/false_positive_detection_model_sgd.pkl $GIT_COPY_PATH
+          cp $BASE_PATH/model/false_positive_detection_vectorizer.pkl Safaa/src/safaa/models/
+          cp $BASE_PATH/model/false_positive_detection_model_sgd.pkl Safaa/src/safaa/models/
 
       - name: Set branch name
         id: vars
@@ -97,8 +96,8 @@ jobs:
           branch-suffix: timestamp
           commit-message: "Update retrained Safaa model"
           add-paths: |
-            $GIT_COPY_PATH/false_positive_detection_vectorizer.pkl
-            $GIT_COPY_PATH/false_positive_detection_model_sgd.pkl
+            Safaa/src/safaa/models/false_positive_detection_vectorizer.pkl
+            Safaa/src/safaa/models/false_positive_detection_model_sgd.pkl
           title: "Retrained model - Accuracy ${{ steps.metrics.outputs.accuracy }}, F1 ${{ steps.metrics.outputs.f1 }}"
           body: |
             This PR contains the newly retrained Safaa model.
