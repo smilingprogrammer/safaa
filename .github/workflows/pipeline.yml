@@ -13,6 +13,7 @@ jobs:
     env:
       BASE_PATH: utility/retraining
       PYTHONPATH: ${{ github.workspace }}/Safaa/src
+      ORIGINAL_PATH: Safaa/src/safaa/models
 #      SAFAA_SECRET: ${{ secrets.MY_SECRET }}
 
     steps:
@@ -55,21 +56,15 @@ jobs:
           python $BASE_PATH/utility_scripts.py --declutter
           python $BASE_PATH/utility_scripts.py --split
           python $BASE_PATH/utility_scripts.py --train
-          python $BASE_PATH/utility_scripts.py --test
-
           python $BASE_PATH/utility_scripts.py --test | tee test_metrics.txt
 
-      - name: Extract metrics
+      - name: Extract test metrics
         id: metrics
         run: |
-          ACCURACY=$(grep "Accuracy" test_metrics.txt | awk '{print $3}')
-          PRECISION=$(grep "Precision" test_metrics.txt | awk '{print $3}')
-          RECALL=$(grep "Recall" test_metrics.txt | awk '{print $3}')
-          F1=$(grep "F1 Score" test_metrics.txt | awk '{print $4}')
-          echo "accuracy=$ACCURACY" >> $GITHUB_OUTPUT
-          echo "precision=$PRECISION" >> $GITHUB_OUTPUT
-          echo "recall=$RECALL" >> $GITHUB_OUTPUT
-          echo "f1=$F1" >> $GITHUB_OUTPUT
+          echo "accuracy=$(grep "Accuracy" test_metrics.txt | awk '{print $3}')" >> $GITHUB_OUTPUT
+          echo "precision=$(grep "Precision" test_metrics.txt | awk '{print $3}')" >> $GITHUB_OUTPUT
+          echo "recall=$(grep "Recall" test_metrics.txt | awk '{print $3}')" >> $GITHUB_OUTPUT
+          echo "f1=$(grep "F1 Score" test_metrics.txt | awk '{print $4}')" >> $GITHUB_OUTPUT
 
       - name: Upload trained model artifact
         uses: actions/upload-artifact@v4
@@ -79,10 +74,9 @@ jobs:
 
       - name: Move retrained model to original path
         run: |
-          ORIGINAL_PATH="Safaa/src/safaa/models"
           mkdir -p "$ORIGINAL_PATH"
-          cp $BASE_PATH/model/false_positive_detection_vectorizer.pkl Safaa/src/safaa/models/
-          cp $BASE_PATH/model/false_positive_detection_model_sgd.pkl Safaa/src/safaa/models/
+          cp $BASE_PATH/model/false_positive_detection_vectorizer.pkl $ORIGINAL_PATH/
+          cp $BASE_PATH/model/false_positive_detection_model_sgd.pkl $ORIGINAL_PATH/
 
       - name: Set branch name
         id: vars
@@ -93,20 +87,19 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: retrained-model-${{ steps.vars.outputs.branch_name }}
-          branch-suffix: timestamp
           commit-message: "Update retrained Safaa model"
           add-paths: |
-            Safaa/src/safaa/models/false_positive_detection_vectorizer.pkl
-            Safaa/src/safaa/models/false_positive_detection_model_sgd.pkl
-          title: "Retrained model - Accuracy ${{ steps.metrics.outputs.accuracy }}, F1 ${{ steps.metrics.outputs.f1 }}"
+            $ORIGINAL_PATH/false_positive_detection_vectorizer.pkl
+            $ORIGINAL_PATH/false_positive_detection_model_sgd.pkl
+          title: "Retrained Model - Accuracy: ${{ steps.metrics.outputs.accuracy }}, F1: ${{ steps.metrics.outputs.f1 }}"
           body: |
-            This PR contains the newly retrained Safaa model.
+            ## Retrained Safaa Model
 
-            **Test results:**
-            - Accuracy: ${{ steps.metrics.outputs.accuracy }}
-            - Precision: ${{ steps.metrics.outputs.precision }}
-            - Recall: ${{ steps.metrics.outputs.recall }}
-            - F1 Score: ${{ steps.metrics.outputs.f1 }}
+            **Performance Metrics:**
+            - **Accuracy:** ${{ steps.metrics.outputs.accuracy }}
+            - **Precision:** ${{ steps.metrics.outputs.precision }}
+            - **Recall:** ${{ steps.metrics.outputs.recall }}
+            - **F1 Score:** ${{ steps.metrics.outputs.f1 }}
 
             The trained model is also available as a downloadable artifact from the workflow run.
           base: main
