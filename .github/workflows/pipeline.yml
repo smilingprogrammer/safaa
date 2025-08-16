@@ -13,7 +13,6 @@ jobs:
     env:
       BASE_PATH: utility/retraining
       PYTHONPATH: ${{ github.workspace }}/Safaa/src
-      ORIGINAL_PATH: Safaa/src/safaa/models
 #      SAFAA_SECRET: ${{ secrets.MY_SECRET }}
 
     steps:
@@ -58,7 +57,7 @@ jobs:
           python $BASE_PATH/utility_scripts.py --train
           python $BASE_PATH/utility_scripts.py --test | tee test_metrics.txt
 
-      - name: Extract test metrics
+      - name: Extract metrics
         id: metrics
         run: |
           echo "accuracy=$(grep "Accuracy" test_metrics.txt | awk '{print $3}')" >> $GITHUB_OUTPUT
@@ -74,9 +73,10 @@ jobs:
 
       - name: Move retrained model to original path
         run: |
+          ORIGINAL_PATH="Safaa/src/safaa/models"
           mkdir -p "$ORIGINAL_PATH"
-          cp $BASE_PATH/model/false_positive_detection_vectorizer.pkl $ORIGINAL_PATH/
-          cp $BASE_PATH/model/false_positive_detection_model_sgd.pkl $ORIGINAL_PATH/
+          cp $BASE_PATH/model/false_positive_detection_vectorizer.pkl Safaa/src/safaa/models/
+          cp $BASE_PATH/model/false_positive_detection_model_sgd.pkl Safaa/src/safaa/models/
 
       - name: Set branch name
         id: vars
@@ -89,17 +89,17 @@ jobs:
           branch: retrained-model-${{ steps.vars.outputs.branch_name }}
           commit-message: "Update retrained Safaa model"
           add-paths: |
-            $ORIGINAL_PATH/false_positive_detection_vectorizer.pkl
-            $ORIGINAL_PATH/false_positive_detection_model_sgd.pkl
-          title: "Retrained Model - Accuracy: ${{ steps.metrics.outputs.accuracy }}, F1: ${{ steps.metrics.outputs.f1 }}"
+            Safaa/src/safaa/models/false_positive_detection_vectorizer.pkl
+            Safaa/src/safaa/models/false_positive_detection_model_sgd.pkl
+          title: "Retrained model - Accuracy ${{ steps.metrics.outputs.accuracy }}, F1 ${{ steps.metrics.outputs.f1 }}"
           body: |
-            ## Retrained Safaa Model
+            This PR contains the newly retrained Safaa model.
 
-            **Performance Metrics:**
-            - **Accuracy:** ${{ steps.metrics.outputs.accuracy }}
-            - **Precision:** ${{ steps.metrics.outputs.precision }}
-            - **Recall:** ${{ steps.metrics.outputs.recall }}
-            - **F1 Score:** ${{ steps.metrics.outputs.f1 }}
+            **Test results:**
+            - Accuracy: ${{ steps.metrics.outputs.accuracy }}
+            - Precision: ${{ steps.metrics.outputs.precision }}
+            - Recall: ${{ steps.metrics.outputs.recall }}
+            - F1 Score: ${{ steps.metrics.outputs.f1 }}
 
             The trained model is also available as a downloadable artifact from the workflow run.
           base: main
