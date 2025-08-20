@@ -61,7 +61,7 @@ jobs:
         id: metrics
         run: |
           echo "accuracy=$(grep "Accuracy" test_metrics.txt | awk '{print $3}')" >> $GITHUB_OUTPUT
-          echo "precision=$(grep "Precision" test_metrics.txt | awk '{print $3}')" >> $GITHUB_OUTPUT
+          echo "precision=$(grep "Precision" test_metrics.txt | grep -oE '[0-9]+\.[0-9]+')" >> $GITHUB_OUTPUT
           echo "recall=$(grep "Recall" test_metrics.txt | awk '{print $3}')" >> $GITHUB_OUTPUT
           echo "f1=$(grep "F1 Score" test_metrics.txt | awk '{print $4}')" >> $GITHUB_OUTPUT
 
